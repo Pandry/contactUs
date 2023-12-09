@@ -1,0 +1,20 @@
+sinks:
+  test:
+    webhook:
+      url: https://example.com/{{ .name }}
+      method: POST
+      headers:
+        foo: bar
+      body: |
+        name={{ .name }}&surname={{ .surname }}&age={{ .age  }}
+forms:
+  www-contact:
+    redirect: https://example.com
+    inputs:
+    - name
+    - surname
+    - weight
+    sinks:
+      - test
+    captcha:
+      enabled: false
