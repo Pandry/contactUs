@@ -1,7 +1,6 @@
 package sinks
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 )
@@ -11,6 +10,10 @@ type WebhookConfig struct {
 	Method  string            `yaml:"method"`
 	Headers map[string]string `yaml:"headers"`
 	Body    string            `yaml:"body"`
+}
+
+func (config WebhookConfig) Name() string {
+	return "Webhook"
 }
 
 func (config WebhookConfig) IsReady() bool {
@@ -30,9 +33,9 @@ func (config WebhookConfig) checkConfig() bool {
 	}
 	return true
 }
-func (config WebhookConfig) Sink(input map[string]string) error {
+func (config WebhookConfig) Sink(input map[string]interface{}) error {
 	if !config.IsReady() {
-		return errors.New("Sink is not ready")
+		return ErrSinkNotReady
 	}
 	url := evaluateTemplate(config.URL, input)
 	method := config.Method

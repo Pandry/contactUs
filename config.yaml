@@ -1,5 +1,8 @@
 sinks:
   test:
+    notion:
+      secret: secret_1234567690abcdefghijklmnopqrstuvwxyz1234567
+      database: 1234567690abcdefghijklmnopqrstuv
     webhook:
       url: https://example.com/{{ .name }}
       method: POST
@@ -11,9 +14,9 @@ forms:
   www-contact:
     redirect: https://example.com
     inputs:
-    - name
-    - surname
-    - weight
+    - Name
+    - Surname
+    - Age
     sinks:
       - test
     captcha:

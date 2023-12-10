@@ -4,18 +4,20 @@ import (
 	"contactUs/sinks"
 )
 
-var Config Configuration
+var Config *Configuration
 
 type Configuration struct {
-	Sinks          map[string]Sink `yaml:"sinks"`
-	Forms          map[string]Form `yaml:"forms"`
-	TrustProxyes   bool            `yaml:"trustProxies"`
-	ClientIPHeader string          `yaml:"clientIPHeader"`
-	ListenPort     int             `yaml:"port"`
+	Sinks          map[string]*Sink `yaml:"sinks"`
+	Forms          map[string]Form  `yaml:"forms"`
+	TrustProxyes   bool             `yaml:"trustProxies"`
+	ClientIPHeader string           `yaml:"clientIPHeader"`
+	ListenPort     int              `yaml:"port"`
 }
 
 type Sink struct {
-	Webhook sinks.WebhookConfig `yaml:"webhook"`
+	ActiveSinksList []sinks.ISink
+	Webhook         sinks.WebhookConfig `yaml:"webhook"`
+	Notion          sinks.NotionConfig  `yaml:"notion"`
 }
 
 type Form struct {

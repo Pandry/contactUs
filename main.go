@@ -15,7 +15,7 @@ func main() {
 	if len(config.Forms) < 1 {
 		log.Panicln("Could not find any form configured", config.Forms)
 	}
-	log.Println("Found ", len(config.Forms), " forms")
+	log.Println("Loaded", len(config.Forms), "forms")
 
 	setupHttp()
 }

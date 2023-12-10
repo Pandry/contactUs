@@ -5,11 +5,16 @@ import (
 	"text/template"
 )
 
+type ISink interface {
+	Sink(input map[string]interface{}) error
+	IsReady() bool
+	Name() string
+}
+
 /*
 To add:
 Slack
 Zulip
-Notion
 Email
 sqlite
 PostgreSQL

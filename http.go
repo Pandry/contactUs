@@ -61,13 +61,23 @@ func handleForm(formId string, submittedFields url.Values, w http.ResponseWriter
 		fmt.Println("No sink was loaded for form", formId, ". Please check the configuration")
 	}
 	for _, sinkName := range form.Sinks {
-		if sink, ok := configuration.Config.Sinks[sinkName]; ok {
-			fmt.Println("Sinking with", sinkName)
-			if sink.Webhook.IsReady() {
-				fmt.Println("Sink", sinkName, "was ready; sinking!")
-				sink.Webhook.Sink(formValues)
+		sink, ok := configuration.Config.Sinks[sinkName]
+		if !ok {
+			returnError(w, 500, "Could not find referenced form in map")
+			return
+		}
+
+		if len(sink.ActiveSinksList) < 1 {
+			fmt.Println("No provider found in sink", sinkName, "for form", formId)
+			continue
+		}
+
+		for _, subSink := range sink.ActiveSinksList {
+			if err := subSink.Sink(stringMapToInterface(formValues)); err != nil {
+				fmt.Println("Got error while processing sink ", subSink.Name(), " with inputs: ", submittedFields, ". Error: "+err.Error())
 			}
 		}
+
 	}
 
 	if form.Redirect != "" {
