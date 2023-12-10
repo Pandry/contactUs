@@ -20,3 +20,9 @@ Forms represnt the various forms you might want to expose
 Each form has a unique name, some input values (the form values), some sinks (where you want to flush the data to) and some additional config, like the redirect you want the client to follow or the captcha settings.
 
 Keep in mind that images are out of scope for now
+
+
+# TODOs:
+- Unify logging
+- Fix (and write) tests
+- Add sinks (sqlite, psql, zulip, email, telegram, slack, rocketchat)
