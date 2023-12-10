@@ -60,6 +60,8 @@ func handleForm(formId string, submittedFields url.Values, w http.ResponseWriter
 	if len(form.Sinks) < 1 {
 		fmt.Println("No sink was loaded for form", formId, ". Please check the configuration")
 	}
+	failed := 0
+	total := 0
 	for _, sinkName := range form.Sinks {
 		sink, ok := configuration.Config.Sinks[sinkName]
 		if !ok {
@@ -72,12 +74,18 @@ func handleForm(formId string, submittedFields url.Values, w http.ResponseWriter
 			continue
 		}
 
+		total++
 		for _, subSink := range sink.ActiveSinksList {
 			if err := subSink.Sink(stringMapToInterface(formValues)); err != nil {
+				failed++
 				fmt.Println("Got error while processing sink ", subSink.Name(), " with inputs: ", submittedFields, ". Error: "+err.Error())
 			}
 		}
 
+	}
+	if total == failed {
+		returnError(w, 500, "There was an issue accepting your form. Please try again later")
+		return
 	}
 
 	if form.Redirect != "" {
