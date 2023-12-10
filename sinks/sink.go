@@ -6,7 +6,7 @@ import (
 )
 
 type ISink interface {
-	Sink(input map[string]interface{}) error
+	Sink(input map[string]string) error
 	IsReady() bool
 	Name() string
 }

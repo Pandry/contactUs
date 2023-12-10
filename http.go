@@ -105,7 +105,7 @@ func handleForm(formId string, submittedFields url.Values, r *http.Request, w ht
 
 		totalSinkAttempts++
 		for _, subSink := range sink.ActiveSinksList {
-			if err := subSink.Sink(stringMapToInterface(formValues)); err != nil {
+			if err := subSink.Sink(formValues); err != nil {
 				failedSinkAttempts++
 				fmt.Println("Got error while processing sink ", subSink.Name(), " with inputs: ", submittedFields, ". Error: "+err.Error())
 			}

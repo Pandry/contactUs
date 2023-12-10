@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"reflect"
+	"strconv"
+	"strings"
 )
 
 func (config NotionConfig) Name() string {
@@ -15,9 +17,16 @@ func (config NotionConfig) Name() string {
 }
 
 type NotionConfig struct {
-	Secret     string `yaml:"secret"`
-	DatabaseId string `yaml:"database"`
+	Secret     string                 `yaml:"secret"`
+	DatabaseId string                 `yaml:"database"`
+	Entries    map[string]NotionEntry `yaml:"parameters"`
 }
+
+type NotionEntry struct {
+	NotionColumnName string `yaml:"notionColumnName"`
+	NotionColumnType string `yaml:"notionColumnType"`
+}
+
 type notionPayload struct {
 	Parent     parent                 `json:"parent"`
 	Properties map[string]interface{} `json:"properties"`
@@ -36,7 +45,7 @@ func (config NotionConfig) IsReady() bool {
 	return true
 }
 
-func (config NotionConfig) Sink(input map[string]interface{}) error {
+func (config NotionConfig) Sink(input map[string]string) error {
 	if !config.IsReady() {
 		return ErrSinkNotReady
 	}
@@ -44,47 +53,65 @@ func (config NotionConfig) Sink(input map[string]interface{}) error {
 	// Notions is very funny and love games and their API is so clean and I love them
 	//
 	// If you find yourself lost in this file, first and foremost I'm sorry
-	// Also, feel free to increment the counter of hours *wasted* here: 13h
+	// Also, feel free to increment the counter of hours *wasted* here: 15h
+	notionRowProperties := make(map[string]interface{})
+
 	for k, v := range input {
-		switch v.(type) {
-		case string:
-			textObj := map[string]interface{}{
-				"type": "rich_text",
-				"rich_text": []map[string]interface{}{
+		if nK, ok := config.Entries[k]; ok {
+			// log.Println("Parsing", k, "With value", v, "as", nK.NotionColumnName, "of type", nK.NotionColumnType)
+			propertyMap := make(map[string]interface{})
+			switch nK.NotionColumnType {
+			case "text", "rich_text":
+				propertyMap["type"] = "rich_text"
+				propertyMap["rich_text"] = []map[string]interface{}{
 					{
-						// "type": "text",
 						"text": map[string]interface{}{
 							"content": v,
 						},
 					},
-				},
-			}
-			input[k] = textObj
-			break
-		// We only parse into int64/float 64
-		case int64, float64:
-			numberObj := map[string]interface{}{
-				"type":   "number",
-				"number": v,
-			}
-			input[k] = numberObj
-		default:
-			fmt.Println("Got unexpected type", reflect.TypeOf(v))
-		}
+				}
+			case "title":
+				propertyMap["type"] = nK.NotionColumnType
+				propertyMap[nK.NotionColumnType] = []map[string]interface{}{
+					{
+						"text": map[string]interface{}{
+							"content": v,
+						},
+					},
+				}
+			case "number":
+				parsedNumber, err := strconv.ParseFloat(strings.TrimSpace(v), 64)
+				if err != nil {
+					log.Println("Notion sink: Parsing failed for float type.", err)
+					continue
+				}
+				propertyMap["type"] = nK.NotionColumnType
+				propertyMap[nK.NotionColumnType] = parsedNumber
 
+			default:
+				log.Println("Notion sink: Given type (", nK.NotionColumnType, ") was unhandled. Ignoring.")
+				continue
+
+			}
+			notionRowProperties[nK.NotionColumnName] = propertyMap
+		} else {
+			log.Println("Notion sink: ignoring field", k, "as it was not found in the notion configuration")
+		}
 	}
 
 	payload := notionPayload{
 		Parent: parent{
 			DatabaseID: config.DatabaseId,
 		},
-		Properties: input,
+		Properties: notionRowProperties,
 	}
 
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Join(errors.New("Error mashaling form into JSON for notion"), err)
 	}
+
+	// log.Println(string(payloadBytes))
 
 	// Create the request
 	req, err := http.NewRequest("POST", "https://api.notion.com/v1/pages", bytes.NewBuffer(payloadBytes))

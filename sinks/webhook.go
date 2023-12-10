@@ -33,7 +33,7 @@ func (config WebhookConfig) checkConfig() bool {
 	}
 	return true
 }
-func (config WebhookConfig) Sink(input map[string]interface{}) error {
+func (config WebhookConfig) Sink(input map[string]string) error {
 	if !config.IsReady() {
 		return ErrSinkNotReady
 	}
