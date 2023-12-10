@@ -103,14 +103,13 @@ func (config NotionConfig) Sink(input map[string]interface{}) error {
 		return errors.Join(errors.New("Error sending notion request"), err)
 	}
 	defer resp.Body.Close()
-	fmt.Println(string(payloadBytes))
 
 	if resp.StatusCode > 299 {
 		respBodyStr, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return errors.Join(errors.New("Error reading notion response"), err)
 		}
-		return errors.New(fmt.Sprintf("Got unexpected code from notion (%d). Response from the server: %s", resp.StatusCode, respBodyStr))
+		return errors.New(fmt.Sprintf("Got unexpected code from notion (%d). Sent payload: %s. Response from the server: %s", resp.StatusCode, string(payloadBytes), respBodyStr))
 	}
 
 	return nil
