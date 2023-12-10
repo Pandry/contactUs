@@ -24,8 +24,7 @@ func ParseBytes(config []byte) (*Configuration, error) {
 		panic(err)
 	}
 
-	// TODO: Check is sink exists
-
+	// Load sinks configurations
 	for sinkName, sink := range c.Sinks {
 		fmt.Println("Loading sink", sinkName)
 		sink.ActiveSinksList = make([]sinks.ISink, 0)
