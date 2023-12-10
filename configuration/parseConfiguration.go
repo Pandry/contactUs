@@ -44,9 +44,9 @@ func ParseBytes(config []byte) (*Configuration, error) {
 
 func GetDefaultConfig() Configuration {
 	return Configuration{
-		Sinks:          make(map[string]*Sink),
-		Forms:          make(map[string]Form),
-		TrustProxyes:   false,
-		ClientIPHeader: "X-Forwarded-For",
+		Sinks:        make(map[string]*Sink),
+		Forms:        make(map[string]Form),
+		TrustProxyes: false,
+		// ClientIPHeader: "X-Forwarded-For",
 	}
 }

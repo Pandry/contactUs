@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"contactUs/captchas"
 	"contactUs/sinks"
 )
 
@@ -31,4 +32,5 @@ type CaptchaConfiguration struct {
 	Enabled  bool   `yaml:"enabled"`
 	Provider string `yaml:"provider"` // turnstyle, reCaptcha, hCaptcha
 	Secret   string `yaml:"secret"`
+	Captcha  captchas.ICaptcha
 }
