@@ -9,7 +9,7 @@ var Config *Configuration
 
 type Configuration struct {
 	Sinks          map[string]*Sink `yaml:"sinks"`
-	Forms          map[string]Form  `yaml:"forms"`
+	Forms          map[string]*Form `yaml:"forms"`
 	TrustProxyes   bool             `yaml:"trustProxies"`
 	ClientIPHeader string           `yaml:"clientIPHeader"`
 	ListenPort     int              `yaml:"port"`
@@ -30,7 +30,7 @@ type Form struct {
 
 type CaptchaConfiguration struct {
 	Enabled  bool   `yaml:"enabled"`
-	Provider string `yaml:"provider"` // turnstyle, reCaptcha, hCaptcha
+	Provider string `yaml:"provider"` // turnstile, reCaptcha, hCaptcha
 	Secret   string `yaml:"secret"`
 	Captcha  captchas.ICaptcha
 }

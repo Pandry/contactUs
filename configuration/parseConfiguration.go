@@ -43,10 +43,10 @@ func ParseBytes(config []byte) (*Configuration, error) {
 	// Loads captcha configurations
 	for formName, form := range c.Forms {
 		if form.Captcha.Enabled {
-			fmt.Print("Loading captcha", form.Captcha.Provider, "for form", formName)
+			fmt.Println("Loading captcha ", form.Captcha.Provider, " for form ", formName)
 			switch form.Captcha.Provider {
 			case "turnstile":
-				form.Captcha.Captcha = captchas.TurnstyleConfig{
+				form.Captcha.Captcha = captchas.TurnstileConfig{
 					Key: form.Captcha.Secret,
 				}
 			default:
@@ -61,7 +61,7 @@ func ParseBytes(config []byte) (*Configuration, error) {
 func GetDefaultConfig() Configuration {
 	return Configuration{
 		Sinks:        make(map[string]*Sink),
-		Forms:        make(map[string]Form),
+		Forms:        make(map[string]*Form),
 		TrustProxyes: false,
 		// ClientIPHeader: "X-Forwarded-For",
 	}
