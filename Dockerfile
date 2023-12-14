@@ -12,3 +12,4 @@ COPY --from=build /contactus .
 EXPOSE 8888
 USER nonroot:nonroot
 ENTRYPOINT ["/contactus"]
+LABEL org.opencontainers.image.source https://github.com/pandry/contactus

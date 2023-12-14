@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"contactUs/captchas"
 	"contactUs/sinks"
 	"fmt"
 	"io/ioutil"
@@ -37,6 +38,21 @@ func ParseBytes(config []byte) (*Configuration, error) {
 			fmt.Println("Loaded subsink", sink.Notion.Name(), "for sink", sinkName)
 		}
 		fmt.Println("Sink", sinkName, "loaded")
+	}
+
+	// Loads captcha configurations
+	for formName, form := range c.Forms {
+		if form.Captcha.Enabled {
+			fmt.Print("Loading captcha", form.Captcha.Provider, "for form", formName)
+			switch form.Captcha.Provider {
+			case "turnstile":
+				form.Captcha.Captcha = captchas.TurnstyleConfig{
+					Key: form.Captcha.Secret,
+				}
+			default:
+				panic("Could not find captcha provider")
+			}
+		}
 	}
 	Config = &c
 	return Config, nil
