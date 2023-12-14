@@ -1,6 +1,8 @@
 package captchas
 
 import (
+	"log"
+
 	turnstile "github.com/meyskens/go-turnstile"
 )
 
@@ -14,8 +16,12 @@ func (config TurnstileConfig) GetResponseFieldName() string {
 
 func (config TurnstileConfig) VerifyCaptcha(response string, ip string) bool {
 	ts := turnstile.New(config.Key)
-
-	if resp, err := ts.Verify(response, ip); err == nil && resp.Success {
+	resp, err := ts.Verify(response, ip)
+	if err != nil {
+		log.Println("Error validating captcha", err)
+		return false
+	}
+	if resp.Success {
 		return true
 	}
 	return false

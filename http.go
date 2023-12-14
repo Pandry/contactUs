@@ -69,7 +69,7 @@ func handleForm(formId string, submittedFields url.Values, r *http.Request, w ht
 		}
 
 		if len(ip) < 7 {
-			returnError(w, 400, "Could get IP correctly")
+			returnError(w, 400, "Could not get IP correctly")
 			return
 		}
 
