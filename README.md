@@ -2,6 +2,9 @@ This wants to be a simple script to handle data from forms.
 This issue came up multiple times during my career, and I was never able to find a good tool that was easy to configure and maintain (looking at you, formtools).  
 This is also very much work in progress for now.
 
+## Quickstart
+`docker run -v your-config.yaml:/config.yaml -p 8080:8888 ghcr.io/pandry/contactus`
+
 ### sinks
 In this program, a sink is a way to get data out of the form and send it somewhere
 

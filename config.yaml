@@ -1,6 +1,8 @@
 sinks:
   test:
     notion:
+      secret: secret_1234567690abcdefghijklmnopqrstuvwxyz1234567
+      database: 1234567690abcdefghijklmnopqrstuv
       parameters:
         name:
           notionColumnName: Name
